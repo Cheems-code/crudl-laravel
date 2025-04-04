@@ -37,7 +37,9 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache && \
 # Exponer el puerto 80
 EXPOSE 80
 
-# Iniciar Apache
-CMD php artisan config:clear && \
-    php artisan migrate --force && \
-    apache2-foreground
+# Copiar wait-for-it.sh al contenedor y asegurarse de que tiene permisos de ejecución
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
+
+# Iniciar Apache y ejecutar migraciones, esperando a que la base de datos esté lista
+CMD /usr/local/bin/wait-for-it.sh db:5432 -- php artisan migrate --force && apache2-foreground
