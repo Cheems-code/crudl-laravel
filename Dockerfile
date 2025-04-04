@@ -38,4 +38,6 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache && \
 EXPOSE 80
 
 # Iniciar Apache
-CMD ["apache2-foreground"]
+CMD php artisan config:clear && \
+    php artisan migrate --force && \
+    apache2-foreground
